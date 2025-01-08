@@ -1,0 +1,514 @@
+Abdominal Bruits
+Abdominal Distension
+Abdominal Masses
+Abdominal Pulsation
+Abdominal Rigidity
+Abdominal Scars
+Abnormal Carotid Pulse Character
+Abnormal Dentition
+Absent Corneal Reflex
+Absent Lower Limb Pulses
+Absent Pharyngeal Reflex
+Absent Pupillary Light Reflexes
+Acetone Breath
+Adie's Tonic Pupil
+Affect
+Alcoholic Foetor
+Angular Cheilitis
+Anisocoria (Unequal Pupils)
+Anomia
+Anosmia
+Antalgic Gait
+Anterior Draw Test
+Anterograde Amnesia
+Apley Scratch Test
+Appearance
+Apprehension Test
+Appropriateness of Affect
+Apraxia
+Apraxic Gait
+Argyll Robertson Pupil
+Arm Elevation Test
+Arterial Skin Changes
+Arterial Ulcers
+Arteriovenous Fistulas
+Arteriovenous NickingAsterixis
+Asymmetric Soft Palate Rise
+Ataxic Gait
+Atrophic Glossitis
+Auditory Acuity
+Auditory Hallucinations
+Augmentation Test
+Babinski Sign
+Baker's Cyst
+Barrel Chest
+Bier Spots
+Bitemporal Hemianopia
+Bizarre Appearance
+Bladder Distension
+Bony Tenderness
+Bouchard's Nodes
+Boutonniere Deformity
+Bowel Sounds
+Bradycardia
+Bradykinesia / Hypokinesia
+Bradypnoea
+Bronchial Breath Sounds
+Brudzinski's Sign
+Bulbar Fatigability
+Cafe au Lait Spots
+Callosities of the Ankle and Foot
+Capgras Syndrome
+Caput Medusae
+Carotid Bruit
+Category Fluency
+Central Cyanosis
+Central Visual Fields
+Centre of Gravity
+Cervical Hyperlordosis
+Charcot Foot
+Chest Expansion
+Chest Wall Tenderness
+B
+CCheyne-Stokes Respiration
+Chorea
+Chvostek's Sign
+Circumlocution
+Claw Hand
+Claw Toe
+Clonus
+Cog Wheel Rigidity
+Collapsing Pulse
+Colour Vision
+Compulsions
+Conceptualisation
+Confusion
+Conjunctival Pallor
+Continuous Murmur
+Cool Extremities
+Cotton Wool Spots
+Cough
+Cover Test
+Cozen's Test
+Crackles / Crepitations
+Cullen's Sign
+Cutaneous Nodules
+Dactylitis
+Decreased Tactile Fremitus
+Dehydration
+Delusions
+Dental Caries
+Dental Erosions
+Dental Trauma
+Depersonalization
+Depressive Thought Content
+Derealization
+Diastolic Murmur
+Digital Clubbing
+Diplopia
+Disordered Reading
+Disordered Writing
+DDisorganised Behaviour
+Displaced Apex Beat
+Dissociative Symptoms
+Distal Weakness
+Double Impulse Apex Beat
+Dull Percussion Note
+Dupuytren's Contracture
+Dysdiadochokinesis
+Dysmegalopsia
+Dystonia
+Echophenomena
+Elbow Bruising
+Elbow Carrying Angle
+Elbow Deformity
+Empty Can Test
+Erotomanic Delusions
+Erythroderma
+Exaggerated Pharyngeal Reflex
+Exanthematous Rash
+Facial Weakness
+Fasciculations
+Femoral Nerve Stretch Test
+Festinating Gait
+Finger-Nose Test
+Fissure in Ano
+Flank Tenderness
+Flat Affect
+Flexor Tendon Crepitus
+Flight of Ideas
+Fluid Overload
+Fluid Wave
+Focal Abdominal Tenderness
+Foetor Hepaticus
+Foot Drop
+Foot Position
+Formal Thought Disorders
+Fourth Heart Sound
+E
+FFourth Heart Sound
+Gangrene
+Generalised Abdominal Tenderness
+Genu Recurvatum (Back-Knee)
+Genu Valgum (Knock-Knee)
+Genu Varum (Bow Leg)
+Gingival Bleeding
+Gingival Hypertrophy
+Gingival Inflammation
+Gottron's Papules
+Grandiose Delusions
+Grey-Turner's Sign
+Gynaecomastia
+Haemorrhoids
+Halitosis
+Hallux Valgus
+Hand of Benediction
+Harsh Speech
+Heberden's Nodes
+Heel Walking
+Heel-to-Shin Test
+Heliotrope Rash
+Hepatomegaly
+Herniae
+High-Arched Palate
+Hoarseness
+Homonymous Hemianopia
+Homonymous Quadrantanopia
+Hyperactivity
+Hyperaesthesia
+Hyperkeratosis
+Hypernasal Speech
+Hyperpigmentation
+Hyperreflexia
+Hyperresonant Percussion Note
+Hypertension
+Hypoaesthesia
+Hypophonia
+Hyporeflexia
+G
+HHyporeflexia
+Hypotension
+Illusions
+Impaired Accommodation
+Impaired Digit Span
+Impaired Executive Function
+Impaired Judgement
+Impaired Rapid Foot Tapping
+Inattention
+Increased Anal Sphincter Tone
+Increased Body Mass Index
+Increased Body Temperature
+Increased Glabellar Reflex
+Increased Tactile Fremitus
+Increased Vocal Resonance
+Increased Waist-Hip Ratio
+Ingrown Toenails
+Inhibitory Control
+Injection Sites
+Intensity of Affect
+Intention Tremor
+Internuclear Ophthalmoplegia
+Irregular Pulse
+Irritability
+Janeway Lesions
+Jaundice
+Jaw Jerk
+Jealous Delusions
+Jerk Nystagmus
+Kayser-Fleischer Rings
+Kernig's Sign
+Koilonychia
+Kolbel's Bow Test
+Kussmaul Respiration
+I
+J
+K
+LLability of Mood
+Lead Pipe Rigidity
+Leg Length Discrepancy
+Leg Tenderness
+Lesser Toe Deformities
+Leukonychia
+Leukoplakia
+Level of Happiness
+Lhermitte's Sign
+Lift Off Test
+Light Touch Sensation
+Limitation of Extraocular Movement
+Limited Active Movement
+Lip Pigmentation
+Lip Ulceration
+Livedo Reticularis
+Liver Nodularity
+Log Roll Test
+Loss of Cervical Lordosis
+Loss of Chest Hair Distribution
+Loss of Lumbar Lordosis
+Loss of Proprioception
+Loud P2
+Loud S1
+Lower Limb Erythema
+Lower Motor Neuron Weakness
+Lupus Pernio
+Lymphadenopathy
+Maculopapular Rash
+March a Petit Poids
+Mastoid Tenderness
+McBurney's Point Tenderness
+McMurray's Test for the Lateral Meniscus
+McMurray's Test for the Medial Meniscus
+Mechanic's Hands
+Micrographia
+Miosis
+Mitral Facies
+MMixed UMN and LMN Weakness
+Monoarthritis
+Morbilliform Rash
+Mouth Ulcers
+Murphy's Sign
+Muscle Wasting
+Mydriasis
+Myoclonus
+Myopathic Facies
+Nail Bed Cyanosis
+Nail Pitting
+Narrow Pulse Pressure
+Nasal Discharge
+Nasal Septal Deviation
+Nasal Septal Perforation
+Nasal Sinus Tenderness
+Neer Sign
+Neologisms
+Neuropathic Ulcers
+Nihilistic Delusions
+Non-Pitting Oedema
+Obsessions
+Onycholysis
+Oral Candidiasis
+Osler's Nodes
+Pain on Eye Movement
+Pain Sensation
+Pallor of the Nail Bed
+Palmar Crease Pallor
+Palmar Erythema
+Palmoplantar Rash
+Palpable Kidney
+Palpable Purpura
+Palpable Thrill
+Panniculitis
+N
+O
+PPapilloedema
+Paradoxical Respiration
+Paranoia
+Paraphasias
+Parasternal Heave
+Paronychia
+Patellar Apprehension Test
+Patellar Bulge Test
+Patellar Crepitus
+Patellar Tap
+Pectus Carinatum (Pigeon Chest)
+Pectus Excavatum (Funnel Chest)
+Peek Sign
+Pendular Nystagmus
+Percussion Myotonia
+Percussion Tenderness
+Perianal Blood
+Perianal Mass
+Perianal Rash
+Perianal Sinus / Fistula
+Periauricular Vesicles
+Pericardial Rub
+Perioral Telangiectasias
+Peripheral Nerve Enlargement
+Peripheral Visual Fields
+Persecutory Delusions
+Pes Cavus
+Pes Planus
+Petechial Rash
+Phalen's Test
+Pharyngeal Erythema
+Pharyngeal Exudate
+Pitting Oedema
+Plethora
+Pleural Rub
+Polyarthritis
+Poor Insight
+Poor Posture
+Poor Self-CarePosterior Draw Test
+Postural Hypotension
+Postural Instability
+Postural Tachycardia
+Postural Tremor
+Poverty of Speech
+Pressure-Loaded Apex Beat
+Pressured Speech
+Prolonged Capillary Refill Time
+Pronator Drift
+Proptosis
+Prostate Enlargement
+Prostate Nodularity
+Prostate Tenderness
+Proximal Muscle Fatigability
+Proximal Myopathy
+Psoriatic Plaques
+Psychogenic Tremor
+Psychomotor Agitation
+Psychomotor Retardation
+Psychotic Thought Content
+Ptosis
+Pull Test
+Pulsatile Abdominal Mass
+Pulsus Paradoxus
+Purpura
+Pustular Rash
+Radio-Femoral Delay
+Radio-Radial Delay
+Raised Jugular Venous Pressure
+Range of Affect
+Raynaud's Phenomenon
+Reactivity of Mood
+Rebound Tenderness
+Rectal Blood
+Rectal Mass
+Rectal Wall Tenderness
+Reduced Anal Sphincter Tone
+RReduced Body Mass Index
+Reduced Body Temperature
+Reduced Bowel Sounds
+Reduced Breath Sounds
+Reduced Facial Sensation
+Reduced Glabellar Reflex
+Reduced Glasgow Coma Scale
+Reduced Oxygen Saturation
+Reduced Range of Motion
+Reduced Visual Acuity
+Reduced Vocal Resonance
+Referential Delusions
+Relative Afferent Pupillary Defect
+Relocation Test
+Repeated Movements
+Respiratory Distress
+Resting Tremor
+Retinal Haemorrhages
+Retrograde Amnesia
+Richmond Agitation-Sedation Scale
+Rinne's Test
+Romberg Test
+Roth Spots
+Rovsing's Sign
+Sacral Oedema
+Salivary Gland Enlargement
+Scapular Winging
+Scleral Icterus
+Sclerodactyly
+Scoliosis
+Scratch Marks
+Scrotal Mass
+Scrotal Tenderness
+Scrotal Varices
+Shawl Sign
+Shifting Dullness
+Short Leg Gait
+Short Stature
+SSilver Wiring
+Simmonds-Thompson Text
+Simpson's Test
+Sister Mary Joseph Nodule
+Skin Blisters
+Skin Pallor
+Skin Thickening
+Small Testes
+Snapping Knee Joint
+Soft A2
+Soft S1
+Spastic Gait
+Spasticity
+Spider Naevi
+Splenomegaly
+Splinter Haemorrhages
+Sputum
+Squat Test
+Stability of Affect
+Stereotyped Movements
+Strabismus
+Straight Leg Raise
+Striae (Stretch Marks)
+Stridor
+Subconjunctival Haemorrhage
+Succussion Splash
+Swan Neck Deformity
+Systolic Murmur
+Tachycardia
+Tachypnoea
+Tall Stature
+Tandem Walking
+Tar Staining
+Telegraphic Speech
+Tenckhoff Catheters
+Tendon Crepitus
+Testicular Enlargement
+Testing for Golfer's Elbow
+TThe Angle of the Heel
+The Patient's Attitude
+Third Heart Sound
+Thomas Test
+Thoracic Hyperkyphosis
+Thoracic Scars
+Tics
+Tinel's Sign at the Medial Malleolus
+Tinel's Sign at the Wrist
+Tinel's Sign of the Elbow
+Toe Walking
+Tongue Deviation
+Tongue Fasciculations
+Tongue Ulcers
+Tongue Wasting
+Tonsillar Swelling
+Torticollis
+Tracheal Deviation
+Tracheal Tug
+Trapezius and Sternocleidomastoid Weakness
+Trendelenburg Gait
+Trendelenburg Test
+Trousseau's Sign
+Ulnar Deviation of the Wrist
+Ulnar Nerve Subluxation
+Uncover Test
+Unilateral Anopia
+Upper Motor Neuron Weakness
+Uraemic Foetor
+Urticarial Rash
+Uvular Displacement
+Valgus Stability Test (Elbow)
+Valgus Stress Test (Knee)
+Varicose Veins
+Varus Stability Test (Elbow)
+Varus Stress Test (Knee)
+Venous Skin Changes
+U
+VVenous Ulcers
+Verbal Comprehension
+Vesicular Rash
+Vibration Sense
+Visible Peristalsis
+Visual Hallucinations
+Visual Neglect
+Volume-Loaded Apex Beat
+W
+Warm Extremities
+Warm-Up Phenomenon
+Wasting of the Hand Muscles
+Weakness of the Muscles of Mastication
+Weber's Test
+Wheeze
+Wide Splitting of S2
+Widened Pulse Pressure
+Word Repetition
+Wrist Drop
+Wrist Swelling
+Written Comprehension
+Xanthelasma
+Xanthomata
+Z-Thumb Deformity"

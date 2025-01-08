@@ -1,0 +1,18 @@
+{
+    "name": "get_availablity",
+    "description": "Check if an appointment slot is available for a specific doctor and time",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "doctorId": {
+          "type": "string",
+          "description": "The ID of the doctor to check availability for"
+        },
+        "appointmentDate": {
+          "type": "string",
+          "description": "The date and time of the appointment slot to check (ISO 8601 format)"
+        }
+      },
+      "required": ["doctorId", "appointmentDate"]
+    }
+  }
