@@ -107,6 +107,13 @@ export const registerPatient = mutation({
     pastSurgeries: v.optional(v.string()),
     familyHistory: v.optional(v.string()),
     hospitalId: v.optional(v.string()),
+    petName: v.optional(v.string()),
+    petBreed: v.optional(v.string()),
+    petSpecies: v.optional(v.string()),
+    petAge: v.optional(v.number()),
+    petGender: v.optional(v.union(v.literal("Male"), v.literal("Female"), v.literal("Other"))),
+    petDob: v.optional(v.string()),
+    petMicrochipNo: v.optional(v.string()),
   },
   async handler(ctx, args) {
     // Generate a unique ID for the patient

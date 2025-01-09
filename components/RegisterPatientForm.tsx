@@ -30,15 +30,26 @@ import { CardHeader } from "@/components/ui/card";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   firstName: z.string().min(1, { message: "First name is required" }),
   middleName: z.string().optional(),
   lastName: z.string().min(1, { message: "Last name is required" }),
-  dateOfBirth: z.string().min(1, { message: "Date of birth is required" }),
+  dateOfBirth: z.date({
+    required_error: "Date of birth is required",
+    invalid_type_error: "That's not a date!",
+  }),
   gender: z.enum(["Male", "Female", "Other"], {
-    message: "Gender must be 'Male', 'Female', or 'Other'",
+    required_error: "Please select a gender",
   }),
   phoneNumber: z
     .string()
@@ -58,6 +69,13 @@ const formSchema = z.object({
   chronicConditions: z.string().optional(),
   pastSurgeries: z.string().optional(),
   familyHistory: z.string().optional(),
+  petName: z.string().optional(),
+  petBreed: z.string().optional(),
+  petSpecies: z.string().optional(),
+  petAge: z.number().positive().int().optional(),
+  petGender: z.enum(["Male", "Female", "Other"]).optional(),
+  petDob: z.date().optional(),
+  petMicrochipNo: z.string().optional(),
 });
 
 export default function RegisterPatientForm() {
@@ -68,7 +86,7 @@ export default function RegisterPatientForm() {
       firstName: "",
       middleName: "",
       lastName: "",
-      dateOfBirth: "",
+      dateOfBirth: undefined,
       gender: undefined,
       phoneNumber: "",
       houseNo: "",
@@ -86,6 +104,13 @@ export default function RegisterPatientForm() {
       chronicConditions: "",
       pastSurgeries: "",
       familyHistory: "",
+      petName: "",
+      petBreed: "",
+      petSpecies: undefined,
+      petAge: undefined,
+      petGender: undefined,
+      petDob: undefined,
+      petMicrochipNo: "",
     },
   });
 
@@ -139,25 +164,27 @@ export default function RegisterPatientForm() {
     setIsSubmitting(true);
 
     try {
+      const formattedValues = {
+        ...values,
+        dateOfBirth: values.dateOfBirth.toISOString(),
+        petDob: values.petDob ? values.petDob.toISOString() : undefined,
+      };
+
       if (!hospitalId) {
         toast.error("Hospital ID not found for the current user.");
         return;
       }
 
       await registerPatient({
-        ...values,
+        ...formattedValues,
         doctorId: user.id,
         hospitalId: hospitalId,
       });
 
-      // Clear the form immediately
       form.reset();
-
-      // Show success message
       setSuccessMessage("Patient has been registered successfully");
       window.scrollTo(0, 0);
 
-      // Clear success message after 5 seconds
       setTimeout(() => {
         setSuccessMessage(null);
       }, 5000);
@@ -170,10 +197,10 @@ export default function RegisterPatientForm() {
   };
 
   return (
-    <div className="shadow-lg max-w-7xl mx-auto w-screen h-screen py-9">
+    <div className="shadow-lg max-w-7xl mx-auto w-full py-9">
       <CardHeader className="text-black">
         <div className="text-2xl font-bold align-middle">
-          New Patient Registration
+          New Pet Registration
         </div>
       </CardHeader>
       {successMessage && (
@@ -185,16 +212,22 @@ export default function RegisterPatientForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <Tabs
-              defaultValue="personal"
+              defaultValue="pet-details"
               className="w-full"
               onValueChange={setActiveTab}
             >
-              <TabsList className="grid w-full grid-cols-4 mb-8">
+              <TabsList className="grid w-full grid-cols-5 mb-8">
+                <TabsTrigger
+                  value="pet-details"
+                  className="data-[state=active]:bg-blue-500 data-[state=active]:text-white"
+                >
+                  Pet Details
+                </TabsTrigger>
                 <TabsTrigger
                   value="personal"
                   className="data-[state=active]:bg-blue-500 data-[state=active]:text-white"
                 >
-                  Personal Information
+                  Pet Parents Information
                 </TabsTrigger>
                 <TabsTrigger
                   value="address"
@@ -297,162 +330,61 @@ export default function RegisterPatientForm() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {["select gender", "Male", "Female", "Other"].map(
-                                (gender) => (
-                                  <SelectItem value={gender} key={gender}>
-                                    {gender}
-                                  </SelectItem>
-                                )
-                              )}
+                              {["Male", "Female", "Other"].map((gender) => (
+                                <SelectItem value={gender} key={gender}>
+                                  {gender}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                           <FormMessage className="text-red-500" />
                         </FormItem>
                       )}
                     />
-
                     <FormField
                       control={form.control}
                       name="dateOfBirth"
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Date of birth</FormLabel>
-                          <div className="flex gap-2">
-                            <Select
-                              onValueChange={(day) => {
-                                const currentValue = field.value
-                                  ? new Date(field.value)
-                                  : new Date();
-                                const newDate = new Date(currentValue);
-                                newDate.setDate(parseInt(day));
-                                if (!isNaN(newDate.getTime())) {
-                                  field.onChange(newDate.toISOString());
-                                }
-                              }}
-                              value={
-                                field.value
-                                  ? new Date(field.value).getDate().toString()
-                                  : undefined
-                              }
-                            >
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Date of Birth</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
                               <FormControl>
-                                <SelectTrigger className="w-[100px]">
-                                  <SelectValue placeholder="Day" />
-                                </SelectTrigger>
+                                <Button
+                                  variant={"outline"}
+                                  className={`w-[240px] pl-3 text-left font-normal ${
+                                    !field.value && "text-muted-foreground"
+                                  }`}
+                                >
+                                  {field.value ? (
+                                    format(field.value, "PPP")
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
                               </FormControl>
-                              <SelectContent>
-                                {Array.from(
-                                  { length: 31 },
-                                  (_, i) => i + 1
-                                ).map((day) => (
-                                  <SelectItem key={day} value={day.toString()}>
-                                    {day}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-
-                            <Select
-                              onValueChange={(month) => {
-                                const currentValue = field.value
-                                  ? new Date(field.value)
-                                  : new Date();
-                                const newDate = new Date(currentValue);
-                                newDate.setMonth(parseInt(month));
-                                // Adjust for invalid dates (e.g., Feb 31 -> Feb 28/29)
-                                if (newDate.getMonth() !== parseInt(month)) {
-                                  newDate.setDate(0);
-                                }
-                                if (!isNaN(newDate.getTime())) {
-                                  field.onChange(newDate.toISOString());
-                                }
-                              }}
-                              value={
-                                field.value
-                                  ? new Date(field.value).getMonth().toString()
-                                  : undefined
-                              }
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className="w-auto p-0"
+                              align="start"
                             >
-                              <FormControl>
-                                <SelectTrigger className="w-[130px]">
-                                  <SelectValue placeholder="Month" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {[
-                                  "January",
-                                  "February",
-                                  "March",
-                                  "April",
-                                  "May",
-                                  "June",
-                                  "July",
-                                  "August",
-                                  "September",
-                                  "October",
-                                  "November",
-                                  "December",
-                                ].map((month, index) => (
-                                  <SelectItem
-                                    key={month}
-                                    value={index.toString()}
-                                  >
-                                    {month}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-
-                            <Select
-                              onValueChange={(year) => {
-                                const currentValue = field.value
-                                  ? new Date(field.value)
-                                  : new Date();
-                                const newDate = new Date(currentValue);
-                                newDate.setFullYear(parseInt(year));
-                                // Adjust for invalid dates (e.g., Feb 29 on non-leap years)
-                                if (newDate.getFullYear() !== parseInt(year)) {
-                                  newDate.setDate(0);
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) =>
+                                  date > new Date() ||
+                                  date < new Date("1900-01-01")
                                 }
-                                if (!isNaN(newDate.getTime())) {
-                                  field.onChange(newDate.toISOString());
-                                }
-                              }}
-                              value={
-                                field.value
-                                  ? new Date(field.value)
-                                      .getFullYear()
-                                      .toString()
-                                  : undefined
-                              }
-                            >
-                              <FormControl>
-                                <SelectTrigger className="w-[120px]">
-                                  <SelectValue placeholder="Year" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {Array.from(
-                                  {
-                                    length: new Date().getFullYear() - 1900 + 1,
-                                  },
-                                  (_, i) => new Date().getFullYear() - i
-                                ).map((year) => (
-                                  <SelectItem
-                                    key={year}
-                                    value={year.toString()}
-                                  >
-                                    {year}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
                           <FormMessage className="text-red-500" />
                         </FormItem>
                       )}
                     />
-
                     <FormField
                       control={form.control}
                       name="email"
@@ -476,7 +408,6 @@ export default function RegisterPatientForm() {
                       )}
                     />
                   </div>
-
                   <FormField
                     control={form.control}
                     name="phoneNumber"
@@ -521,7 +452,7 @@ export default function RegisterPatientForm() {
                       name="gramPanchayat"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Road(Optional)</FormLabel>
+                          <FormLabel>Road (Optional)</FormLabel>
                           <FormControl>
                             <Input placeholder="Road" {...field} />
                           </FormControl>
@@ -715,7 +646,7 @@ export default function RegisterPatientForm() {
                       </FormItem>
                     )}
                   />
-                  <FormField
+                  {/* <FormField
                     control={form.control}
                     name="familyHistory"
                     render={({ field }) => (
@@ -727,6 +658,180 @@ export default function RegisterPatientForm() {
                             className="min-h-[100px]"
                             {...field}
                           />
+                        </FormControl>
+                        <FormMessage className="text-red-500" />
+                      </FormItem>
+                    )}
+                  /> */}
+                </div>
+              </TabsContent>
+              <TabsContent value="pet-details">
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="petName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Pet Name (Optional)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Pet Name" {...field} />
+                          </FormControl>
+                          <FormMessage className="text-red-500" />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="petBreed"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Pet Breed (Optional)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Pet Breed" {...field} />
+                          </FormControl>
+                          <FormMessage className="text-red-500" />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="petSpecies"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Pet Species (Optional)</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Species" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {[
+                                "Dog",
+                                "Cat",
+                                "Bird",
+                                "Fish",
+                                "Reptile",
+                                "Other",
+                              ].map((species) => (
+                                <SelectItem key={species} value={species}>
+                                  {species}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage className="text-red-500" />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="petAge"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Pet Age (Optional)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="Pet Age"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(e.target.valueAsNumber)
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage className="text-red-500" />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="petGender"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Pet Gender (Optional)</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Gender" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {["Male", "Female", "Other"].map((gender) => (
+                                <SelectItem key={gender} value={gender}>
+                                  {gender}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage className="text-red-500" />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="petDob"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Pet Date of Birth (Optional)</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={"outline"}
+                                  className={`w-[240px] pl-3 text-left font-normal ${
+                                    !field.value && "text-muted-foreground"
+                                  }`}
+                                >
+                                  {field.value ? (
+                                    format(field.value, "PPP")
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className="w-auto p-0"
+                              align="start"
+                            >
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) =>
+                                  date > new Date() ||
+                                  date < new Date("1900-01-01")
+                                }
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage className="text-red-500" />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="petMicrochipNo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Pet Microchip Number (Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Microchip Number" {...field} />
                         </FormControl>
                         <FormMessage className="text-red-500" />
                       </FormItem>
