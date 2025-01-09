@@ -33,7 +33,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 const doctorMenuItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
   { name: "Consultation", icon: Users, path: "/consultation" },
-  { name: "Add Patient", icon: UserPlus, path: "/registerpatient" },
+  { name: "Add Pet Details", icon: UserPlus, path: "/registerpatient" },
 ];
 
 const patientMenuItems = [

@@ -712,14 +712,7 @@ export default function RegisterPatientForm() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {[
-                                "Dog",
-                                "Cat",
-                                "Bird",
-                                "Fish",
-                                "Reptile",
-                                "Other",
-                              ].map((species) => (
+                              {["Canine", "Feline", "Other"].map((species) => (
                                 <SelectItem key={species} value={species}>
                                   {species}
                                 </SelectItem>
