@@ -458,6 +458,7 @@ export const updatePatient = mutation({
     dateOfBirth: v.string(),
     gender: v.union(v.literal("Male"), v.literal("Female"), v.literal("Other")),
     phoneNumber: v.string(),
+    email: v.optional(v.string()),
     houseNo: v.optional(v.string()),
     gramPanchayat: v.optional(v.string()),
     village: v.optional(v.string()),
@@ -473,6 +474,13 @@ export const updatePatient = mutation({
     chronicConditions: v.optional(v.string()),
     pastSurgeries: v.optional(v.string()),
     familyHistory: v.optional(v.string()),
+    petName: v.string(),
+    petBreed: v.optional(v.string()),
+    petSpecies: v.optional(v.string()),
+    petAge: v.optional(v.number()),
+    petGender: v.optional(v.union(v.literal("Male"), v.literal("Female"), v.literal("Other"))),
+    petDob: v.string(),
+    petMicrochipNo: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const { id, ...updateData } = args;
@@ -480,6 +488,7 @@ export const updatePatient = mutation({
     return { success: true };
   },
 });
+
 export const getPatientDetails = query({
   args: { patientId: v.id("patients") },
   handler: async (ctx, args) => {

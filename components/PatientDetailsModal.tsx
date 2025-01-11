@@ -55,7 +55,7 @@ export function PatientDetailsModal({
         setEditedPatient({
           ...patientDetails,
           id: patientDetails._id,
-        } as Patient);
+        } as unknown as Patient);
         setIsLoading(false);
       }
     }
@@ -65,7 +65,19 @@ export function PatientDetailsModal({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setEditedPatient((prev) => (prev ? { ...prev, [name]: value } : null));
+    setEditedPatient((prev) =>
+      prev
+        ? {
+            ...prev,
+            [name]:
+              name === "petAge"
+                ? parseInt(value, 10) || undefined
+                : name === "dateOfBirth" || name === "petDob"
+                  ? value || undefined
+                  : value,
+          }
+        : null
+    );
   };
 
   const handleUpdate = async () => {
@@ -73,12 +85,13 @@ export function PatientDetailsModal({
       try {
         await updatePatient({
           id: editedPatient.id,
-          firstName: editedPatient.firstName,
+          firstName: editedPatient.firstName || "",
           middleName: editedPatient.middleName,
-          lastName: editedPatient.lastName,
-          dateOfBirth: editedPatient.dateOfBirth,
+          lastName: editedPatient.lastName || "",
+          dateOfBirth: editedPatient.dateOfBirth || "",
           gender: editedPatient.gender as "Male" | "Female" | "Other",
-          phoneNumber: editedPatient.phoneNumber,
+          phoneNumber: editedPatient.phoneNumber || "",
+          email: editedPatient.email,
           houseNo: editedPatient.houseNo,
           gramPanchayat: editedPatient.gramPanchayat,
           village: editedPatient.village,
@@ -94,6 +107,17 @@ export function PatientDetailsModal({
           chronicConditions: editedPatient.chronicConditions,
           pastSurgeries: editedPatient.pastSurgeries,
           familyHistory: editedPatient.familyHistory,
+          petName: editedPatient.petName || "",
+          petBreed: editedPatient.petBreed,
+          petSpecies: editedPatient.petSpecies,
+          petAge: editedPatient.petAge,
+          petGender: editedPatient.petGender as
+            | "Male"
+            | "Female"
+            | "Other"
+            | undefined,
+          petDob: editedPatient.petDob || "",
+          petMicrochipNo: editedPatient.petMicrochipNo,
         });
         onClose();
       } catch (error) {
@@ -104,7 +128,7 @@ export function PatientDetailsModal({
   };
 
   const handleMakeAppointment = () => {
-    router.push("/appointmment");
+    router.push("/appointment");
   };
 
   const fields = [
@@ -114,6 +138,7 @@ export function PatientDetailsModal({
     { name: "dateOfBirth", label: "Date of Birth" },
     { name: "gender", label: "Gender" },
     { name: "phoneNumber", label: "Phone Number" },
+    { name: "email", label: "Email" },
     { name: "houseNo", label: "House No" },
     { name: "gramPanchayat", label: "Gram Panchayat" },
     { name: "village", label: "Village" },
@@ -129,6 +154,13 @@ export function PatientDetailsModal({
     { name: "chronicConditions", label: "Chronic Conditions" },
     { name: "pastSurgeries", label: "Past Surgeries" },
     { name: "familyHistory", label: "Family History" },
+    { name: "petName", label: "Pet Name" },
+    { name: "petBreed", label: "Pet Breed" },
+    { name: "petSpecies", label: "Pet Species" },
+    { name: "petAge", label: "Pet Age" },
+    { name: "petGender", label: "Pet Gender" },
+    { name: "petDob", label: "Pet Date of Birth" },
+    { name: "petMicrochipNo", label: "Pet Microchip Number" },
   ];
 
   return (
@@ -170,42 +202,38 @@ export function PatientDetailsModal({
                       className="h-24 text-sm"
                     />
                   ) : (
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={
-                        editedPatient[
-                          field.name as keyof Patient
-                        ]?.toString() || ""
-                      }
-                      onChange={handleInputChange}
-                      className="text-sm"
-                    />
+                    <div>
+                      {["dateOfBirth", "petDob"].includes(field.name) ? (
+                        <Input
+                          id={field.name}
+                          name={field.name}
+                          value={
+                            editedPatient[
+                              field.name as keyof Patient
+                            ]?.toString() || ""
+                          }
+                          onChange={handleInputChange}
+                          type="date"
+                          className="text-sm"
+                        />
+                      ) : (
+                        <Input
+                          id={field.name}
+                          name={field.name}
+                          value={
+                            editedPatient[
+                              field.name as keyof Patient
+                            ]?.toString() || ""
+                          }
+                          onChange={handleInputChange}
+                          type={field.name === "petAge" ? "number" : "text"}
+                          className="text-sm"
+                        />
+                      )}
+                    </div>
                   )}
                 </div>
               ))}
-              <div className="flex flex-col space-y-1">
-                <Label htmlFor="email" className="text-sm font-medium">
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  value={editedPatient.email}
-                  disabled
-                  className="text-sm"
-                />
-              </div>
-              <div className="flex flex-col space-y-1">
-                <Label htmlFor="hospitalId" className="text-sm font-medium">
-                  Hospital ID
-                </Label>
-                <Input
-                  id="hospitalId"
-                  value={editedPatient.hospitalId}
-                  disabled
-                  className="text-sm"
-                />
-              </div>
             </div>
           ) : (
             <p>No patient data available.</p>

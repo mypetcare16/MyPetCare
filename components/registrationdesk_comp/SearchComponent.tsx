@@ -30,15 +30,44 @@ export default function PatientSearch() {
   useEffect(() => {
     if (allPatients && Array.isArray(allPatients)) {
       const mappedPatients: Patient[] = allPatients.map((patient) => ({
-        ...patient,
         id: patient._id,
+        patientId: patient.patientId?.toString(),
+        firstName: patient.firstName || "",
+        middleName: patient.middleName,
+        lastName: patient.lastName || "",
+        phoneNumber: patient.phoneNumber || "",
+        email: patient.email,
+        dateOfBirth: patient.dateOfBirth,
+        gender: patient.gender,
+        houseNo: patient.houseNo,
+        gramPanchayat: patient.gramPanchayat,
+        village: patient.village,
+        tehsil: patient.tehsil,
+        district: patient.district,
+        state: patient.state,
+        systolic: patient.systolic,
+        diastolic: patient.diastolic,
+        heartRate: patient.heartRate,
+        temperature: patient.temperature,
+        oxygenSaturation: patient.oxygenSaturation,
+        allergies: patient.allergies,
+        chronicConditions: patient.chronicConditions,
+        pastSurgeries: patient.pastSurgeries,
+        familyHistory: patient.familyHistory,
+        petName: patient.petName || "",
+        petBreed: patient.petBreed,
+        petSpecies: patient.petSpecies,
+        petAge: patient.petAge,
+        petGender: patient.petGender,
+        petDob: patient.petDob || "",
+        petMicrochipNo: patient.petMicrochipNo,
       }));
 
       if (searchTerm) {
         const lowercaseSearchTerm = searchTerm.toLowerCase();
         const filteredPatients = mappedPatients.filter(
           (patient) =>
-            patient.patientId?.toString().includes(lowercaseSearchTerm) ||
+            patient.patientId?.includes(lowercaseSearchTerm) ||
             patient.firstName.toLowerCase().includes(lowercaseSearchTerm) ||
             patient.lastName.toLowerCase().includes(lowercaseSearchTerm) ||
             patient.phoneNumber.includes(searchTerm)
@@ -104,9 +133,7 @@ export default function PatientSearch() {
                 {searchResults.length > 0 ? (
                   searchResults.map((patient) => (
                     <tr key={patient.id.toString()} className="border-b">
-                      <td className="px-4 py-2 text-sm">
-                        {patient.patientId?.toString()}
-                      </td>
+                      <td className="px-4 py-2 text-sm">{patient.patientId}</td>
                       <td className="px-4 py-2 text-sm">
                         {`${patient.firstName} ${patient.middleName || ""} ${patient.lastName}`}
                       </td>

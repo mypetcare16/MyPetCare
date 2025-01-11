@@ -2,16 +2,15 @@ import { Id } from "@/convex/_generated/dataModel";
 
 export interface Patient {
 
-  id: Id<"patients">; // This will be mapped from _id
-  _creationTime: number;
-  patientId: string | number;
-  email: string;
+  id: Id<"patients">;
+  patientId?: string;
   firstName: string;
   middleName?: string;
   lastName: string;
-  dateOfBirth: string;
-  gender: "Male" | "Female" | "Other";
   phoneNumber: string;
+  email?: string;
+  dateOfBirth?: string;
+  gender?: string;
   houseNo?: string;
   gramPanchayat?: string;
   village?: string;
@@ -23,10 +22,16 @@ export interface Patient {
   heartRate?: string;
   temperature?: string;
   oxygenSaturation?: string;
-  hospitalId?: string;
   allergies?: string;
   chronicConditions?: string;
   pastSurgeries?: string;
   familyHistory?: string;
-}
+  petName: string;
+  petBreed?: string;
+  petSpecies?: string;
+  petAge?: number;
+  petGender?: string;
+  petDob: string;
+  petMicrochipNo?: string;
+};
 
