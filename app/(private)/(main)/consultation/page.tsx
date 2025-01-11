@@ -71,7 +71,7 @@ const PatientCard: React.FC<PatientCardProps> = ({
     );
   }
 
-  const { firstName, lastName, gender, dateOfBirth, phoneNumber } = patientInfo;
+  const { firstName, lastName, gender, petDob, phoneNumber } = patientInfo;
 
   const calculateAge = (dob: string) => {
     const today = new Date();
@@ -87,7 +87,7 @@ const PatientCard: React.FC<PatientCardProps> = ({
     return age;
   };
 
-  const age = calculateAge(dateOfBirth);
+  const age = calculateAge(petDob);
 
   return (
     <Collapsible open={isOpen} onOpenChange={onOpenChange}>
@@ -135,7 +135,7 @@ const PatientCard: React.FC<PatientCardProps> = ({
           </p>
           <p className="text-sm">
             <strong>Date of Birth:</strong>{" "}
-            {new Date(dateOfBirth).toLocaleDateString()}
+            {new Date(petDob).toLocaleDateString()}
           </p>
           <div className="mt-2 flex flex-col gap-2">
             <div className="flex justify-between items-center">
