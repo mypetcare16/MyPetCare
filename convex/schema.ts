@@ -59,13 +59,13 @@ export default defineSchema({
 
     patients: defineTable({
       patientId: v.number(),
-      email: v.string(),
-      firstName: v.string(),
+      email: v.optional(v.string()),
+      firstName: v.optional(v.string()),
       middleName: v.optional(v.string()),
-      lastName: v.string(),
-      dateOfBirth: v.string(),
-      gender: v.union(v.literal("Male"), v.literal("Female"), v.literal("Other")),
-      phoneNumber: v.string(),
+      lastName: v.optional(v.string()),
+      dateOfBirth:  v.optional(v.string()),
+      gender:v.optional(v.union(v.literal("Male"), v.literal("Female"), v.literal("Other"))),
+      phoneNumber: v.optional(v.string()),
       houseNo: v.optional(v.string()),
       gramPanchayat: v.optional(v.string()),
       village: v.optional(v.string()),
@@ -88,7 +88,7 @@ export default defineSchema({
     petSpecies: v.optional(v.string()),
     petAge: v.optional(v.number()),
     petGender: v.optional(v.union(v.literal("Male"), v.literal("Female"), v.literal("Other"))),
-    petDob: v.optional(v.string()),
+    petDob: v.string(),
     petMicrochipNo: v.optional(v.string()),
     })
       .index("by_patient_id", ["patientId"])

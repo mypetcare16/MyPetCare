@@ -47,7 +47,7 @@ export const getAppoitmentsByDoctor =  query({
           .first();
 
         // Calculate age from date of birth
-        const age = new Date().getFullYear() - new Date(patient.dateOfBirth).getFullYear();
+        const age = new Date().getFullYear() - new Date(patient.petDob).getFullYear();
 
         return {
           id: patient.patientId,
@@ -83,13 +83,13 @@ export const getAppoitmentsByDoctor =  query({
 
 export const registerPatient = mutation({
   args: {
-    email: v.string(),
-    firstName: v.string(),
+    email: v.optional(v.string()),
+    firstName: v.optional(v.string()),
     middleName: v.optional(v.string()),
-    lastName: v.string(),
-    dateOfBirth: v.string(),
-    gender: v.union(v.literal("Male"), v.literal("Female"), v.literal("Other")),
-    phoneNumber: v.string(),
+    lastName: v.optional(v.string()),
+    dateOfBirth: v.optional(v.string()),
+    gender: v.optional(v.union(v.literal("Male"), v.literal("Female"), v.literal("Other"))),
+    phoneNumber: v.string(), // Now required
     houseNo: v.optional(v.string()),
     gramPanchayat: v.optional(v.string()),
     village: v.optional(v.string()),
@@ -101,44 +101,53 @@ export const registerPatient = mutation({
     heartRate: v.optional(v.string()),
     temperature: v.optional(v.string()),
     oxygenSaturation: v.optional(v.string()),
-    doctorId:v.optional(v.string()), // New field to store the ID of the doctor who registered the patient
+    doctorId: v.optional(v.string()),
+    hospitalId: v.optional(v.string()),
     allergies: v.optional(v.string()),
     chronicConditions: v.optional(v.string()),
     pastSurgeries: v.optional(v.string()),
     familyHistory: v.optional(v.string()),
-    hospitalId: v.optional(v.string()),
     petName: v.optional(v.string()),
     petBreed: v.optional(v.string()),
     petSpecies: v.optional(v.string()),
     petAge: v.optional(v.number()),
     petGender: v.optional(v.union(v.literal("Male"), v.literal("Female"), v.literal("Other"))),
-    petDob: v.optional(v.string()),
+    petDob: v.string(), // Now required
     petMicrochipNo: v.optional(v.string()),
   },
   async handler(ctx, args) {
     // Generate a unique ID for the patient
     const patientId = Date.now();
 
-    // Check if a patient with the given phone number already exists
-    const existingPatient = await ctx.db
-      .query("patients")
-      .withIndex("by_phoneNumber", (q) => q.eq("phoneNumber", args.phoneNumber))
-      .unique();
-
-    if (existingPatient) {
-      throw new Error("A patient with this phone number already exists.");
-    }
+    // Calculate pet age based on petDob
+    const petAge = calculateAge(args.petDob);
 
     // Insert new patient record into the database
     await ctx.db.insert("patients", {
       patientId,
       ...args,
+      petAge, // Add calculated pet age
     });
 
     return { success: true, patientId };
   },
-  
 });
+
+// Helper function to calculate age based on date of birth
+function calculateAge(dateOfBirth: string): number {
+  const today = new Date();
+  const birthDate = new Date(dateOfBirth);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  
+  return age;
+}
+
+
 
 export const getPatientsByDoctor = query({
   args: { doctorId: v.string() },

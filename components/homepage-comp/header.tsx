@@ -32,7 +32,7 @@ export function Header() {
     <header className="px-4 lg:px-6 h-16 flex items-center justify-between border-b bg-white/50 backdrop-blur-sm fixed w-full z-50">
       <Link className="flex items-center justify-center" href="/homepage">
         <span className="font-bold text-xl md:text-2xl bg-gradient-to-r from-blue-600 via-blue-500 to-sky-400 bg-clip-text text-transparent">
-          MyMedirecords
+          VetVault
         </span>
       </Link>
 

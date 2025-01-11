@@ -90,12 +90,12 @@ export default function SearchAI() {
          bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-sm font-light track`
                 )}
               >
-                Introducing MyMedi AI
+                Introducing VetVault AI
               </span>
               <ChevronRight className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
             </AnimatedGradientText>
             <h1 className="font-bold text-2xl">
-              Discover Better Health with My Medi Records
+              Discover Better Health with VetVault
             </h1>
             <p className="text-sm text-gray-500">
               Explore reliable medical information at your fingertips.

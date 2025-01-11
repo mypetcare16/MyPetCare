@@ -5,8 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Save } from "lucide-react";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -27,33 +25,20 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CardHeader } from "@/components/ui/card";
-import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useUser } from "@clerk/nextjs";
 
 const formSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }),
-  firstName: z.string().min(1, { message: "First name is required" }),
+  email: z.string().optional(),
+  firstName: z.string().optional(),
   middleName: z.string().optional(),
-  lastName: z.string().min(1, { message: "Last name is required" }),
-  dateOfBirth: z.date({
-    required_error: "Date of birth is required",
-    invalid_type_error: "That's not a date!",
-  }),
-  gender: z.enum(["Male", "Female", "Other"], {
-    required_error: "Please select a gender",
-  }),
-  phoneNumber: z
-    .string()
-    .min(10, { message: "Phone number must be at least 10 digits" }),
+  lastName: z.string().optional(),
+  dateOfBirth: z.string().optional(),
+  gender: z.enum(["Male", "Female", "Other"]).optional(),
+  phoneNumber: z.string().min(1, "Phone number is required"),
   houseNo: z.string().optional(),
   gramPanchayat: z.string().optional(),
   village: z.string().optional(),
@@ -69,16 +54,24 @@ const formSchema = z.object({
   chronicConditions: z.string().optional(),
   pastSurgeries: z.string().optional(),
   familyHistory: z.string().optional(),
-  petName: z.string().optional(),
+  petName: z.string().min(1, "Pet name is required"),
   petBreed: z.string().optional(),
   petSpecies: z.string().optional(),
-  petAge: z.number().positive().int().optional(),
+  petAge: z.number().optional(),
   petGender: z.enum(["Male", "Female", "Other"]).optional(),
-  petDob: z.date().optional(),
+  petDob: z.string().min(1, "Pet date of birth is required"),
   petMicrochipNo: z.string().optional(),
 });
 
 export default function RegisterPatientForm() {
+  const { user } = useUser();
+  const registerPatient = useMutation(api.patients.registerPatient);
+  const userId = user?.id || "";
+  const hospitalId = useQuery(api.users.getHospitalIdByUserId, {
+    userId,
+  });
+  const doctorId = userId;
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -114,86 +107,75 @@ export default function RegisterPatientForm() {
     },
   });
 
-  const registerPatient = useMutation(api.patients.registerPatient);
   const [activeTab, setActiveTab] = useState("personal");
-  const { user, isSignedIn } = useUser();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { email, phoneNumber } = form.watch();
-  const checkDuplicates = useQuery(api.patients.checkDuplicates, {
-    email,
-    phoneNumber,
-  });
-
-  const userId = user?.id || "";
-  const hospitalId = useQuery(api.users.getHospitalIdByUserId, {
-    userId,
-  });
+  // Watch petDob to calculate age
+  const petDob = form.watch("petDob");
 
   useEffect(() => {
-    if (checkDuplicates?.emailExists) {
-      form.setError("email", {
-        type: "manual",
-        message: "This email is already registered.",
-      });
-    } else {
-      form.clearErrors("email");
+    if (petDob) {
+      const age = calculateAge(petDob);
+      form.setValue("petAge", age);
     }
-
-    if (checkDuplicates?.phoneExists) {
-      form.setError("phoneNumber", {
-        type: "manual",
-        message: "This phone number is already registered.",
-      });
-    } else {
-      form.clearErrors("phoneNumber");
-    }
-  }, [checkDuplicates, form]);
+  }, [petDob, form]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!isSignedIn || !user) {
-      toast.error("You must be signed in to register a patient.");
-      return;
-    }
-
-    if (checkDuplicates?.emailExists || checkDuplicates?.phoneExists) {
+    if (!userId || !hospitalId) {
+      toast.error("User or hospital information not available");
       return;
     }
 
     setIsSubmitting(true);
-
     try {
       const formattedValues = {
         ...values,
-        dateOfBirth: values.dateOfBirth.toISOString(),
-        petDob: values.petDob ? values.petDob.toISOString() : undefined,
+        dateOfBirth: values.dateOfBirth
+          ? new Date(values.dateOfBirth).toISOString()
+          : undefined,
+        petDob: new Date(values.petDob).toISOString(),
       };
 
-      if (!hospitalId) {
-        toast.error("Hospital ID not found for the current user.");
-        return;
-      }
-
-      await registerPatient({
+      const result = await registerPatient({
         ...formattedValues,
-        doctorId: user.id,
-        hospitalId: hospitalId,
+        doctorId,
+        hospitalId,
       });
 
-      form.reset();
-      setSuccessMessage("Patient has been registered successfully");
-      window.scrollTo(0, 0);
-
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 5000);
+      if (result) {
+        setSuccessMessage("Patient has been registered successfully");
+        form.reset();
+        window.scrollTo(0, 0);
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 5000);
+      } else {
+        toast.error("Failed to register patient. Please try again.");
+      }
     } catch (error) {
+      console.error("Error submitting form:", error);
       toast.error("Failed to register patient. Please try again.");
-      console.error("Error registering patient:", error);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Helper function to calculate age
+  const calculateAge = (dateOfBirth: string): number => {
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+
+    return age;
   };
 
   return (
@@ -258,30 +240,9 @@ export default function RegisterPatientForm() {
                         <FormItem>
                           <FormLabel>First Name</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="First Name"
-                              {...field}
-                              className={
-                                form.formState.errors.firstName
-                                  ? "border-red-500"
-                                  : ""
-                              }
-                            />
+                            <Input placeholder="First Name" {...field} />
                           </FormControl>
-                          <FormMessage className="text-red-500" />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="middleName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Middle Name (Optional)</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Middle Name" {...field} />
-                          </FormControl>
-                          <FormMessage className="text-red-500" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -292,143 +253,48 @@ export default function RegisterPatientForm() {
                         <FormItem>
                           <FormLabel>Last Name</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="Last Name"
-                              {...field}
-                              className={
-                                form.formState.errors.lastName
-                                  ? "border-red-500"
-                                  : ""
-                              }
-                            />
+                            <Input placeholder="Last Name" {...field} />
                           </FormControl>
-                          <FormMessage className="text-red-500" />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
-                    <FormField
-                      control={form.control}
-                      name="gender"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Gender</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger
-                                className={
-                                  form.formState.errors.gender
-                                    ? "border-red-500"
-                                    : ""
-                                }
-                              >
-                                <SelectValue placeholder="Select Gender" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {["Male", "Female", "Other"].map((gender) => (
-                                <SelectItem value={gender} key={gender}>
-                                  {gender}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage className="text-red-500" />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="dateOfBirth"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormLabel>Date of Birth</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={"outline"}
-                                  className={`w-[240px] pl-3 text-left font-normal ${
-                                    !field.value && "text-muted-foreground"
-                                  }`}
-                                >
-                                  {field.value ? (
-                                    format(field.value, "PPP")
-                                  ) : (
-                                    <span>Pick a date</span>
-                                  )}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className="w-auto p-0"
-                              align="start"
-                            >
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) =>
-                                  date > new Date() ||
-                                  date < new Date("1900-01-01")
-                                }
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage className="text-red-500" />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="email"
-                              placeholder="Email"
-                              {...field}
-                              className={
-                                form.formState.errors.email
-                                  ? "border-red-500"
-                                  : ""
-                              }
-                            />
-                          </FormControl>
-                          <FormMessage className="text-red-500" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
                   <FormField
                     control={form.control}
-                    name="phoneNumber"
+                    name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
+                        <FormLabel>Email (Optional)</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="e.g: 7550147999"
+                            type="text"
+                            placeholder="Email (Optional)"
                             {...field}
-                            className={
-                              form.formState.errors.phoneNumber
-                                ? "border-red-500"
-                                : ""
-                            }
                           />
                         </FormControl>
-                        <FormMessage className="text-red-500" />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
+
+                  {/* <FormField
+                    control={form.control}
+                    name="dateOfBirth"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date of Birth</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="date"
+                            {...field}
+                            value={field.value || ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  /> */}
                 </div>
               </TabsContent>
               <TabsContent value="address">
@@ -439,11 +305,11 @@ export default function RegisterPatientForm() {
                       name="houseNo"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>House No., Street (Optional)</FormLabel>
+                          <FormLabel>House No., Street</FormLabel>
                           <FormControl>
                             <Input placeholder="House No., Street" {...field} />
                           </FormControl>
-                          <FormMessage className="text-red-500" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -452,11 +318,11 @@ export default function RegisterPatientForm() {
                       name="gramPanchayat"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Road (Optional)</FormLabel>
+                          <FormLabel>Road</FormLabel>
                           <FormControl>
                             <Input placeholder="Road" {...field} />
                           </FormControl>
-                          <FormMessage className="text-red-500" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -467,11 +333,11 @@ export default function RegisterPatientForm() {
                       name="village"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Village (Optional)</FormLabel>
+                          <FormLabel>Village</FormLabel>
                           <FormControl>
                             <Input placeholder="Village" {...field} />
                           </FormControl>
-                          <FormMessage className="text-red-500" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -480,11 +346,11 @@ export default function RegisterPatientForm() {
                       name="tehsil"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Taluk (Optional)</FormLabel>
+                          <FormLabel>Taluk</FormLabel>
                           <FormControl>
                             <Input placeholder="Taluk" {...field} />
                           </FormControl>
-                          <FormMessage className="text-red-500" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -495,11 +361,11 @@ export default function RegisterPatientForm() {
                       name="district"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>District (Optional)</FormLabel>
+                          <FormLabel>District</FormLabel>
                           <FormControl>
                             <Input placeholder="District" {...field} />
                           </FormControl>
-                          <FormMessage className="text-red-500" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -508,11 +374,11 @@ export default function RegisterPatientForm() {
                       name="state"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>State (Optional)</FormLabel>
+                          <FormLabel>State</FormLabel>
                           <FormControl>
                             <Input placeholder="State" {...field} />
                           </FormControl>
-                          <FormMessage className="text-red-500" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -522,31 +388,18 @@ export default function RegisterPatientForm() {
               <TabsContent value="vitals">
                 <div className="space-y-6">
                   <div className="space-y-4">
-                    <FormLabel>Blood Pressure (mmHg)</FormLabel>
+                    {/* <FormLabel>Blood Pressure (mmHg)</FormLabel> */}
                     <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                      <FormField
-                        control={form.control}
-                        name="systolic"
-                        render={({ field }) => (
-                          <FormItem className="w-full sm:w-1/2">
-                            <FormLabel>Systolic (Optional)</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Systolic" {...field} />
-                            </FormControl>
-                            <FormMessage className="text-red-500" />
-                          </FormItem>
-                        )}
-                      />
                       <FormField
                         control={form.control}
                         name="diastolic"
                         render={({ field }) => (
                           <FormItem className="w-full sm:w-1/2">
-                            <FormLabel>Diastolic (Optional)</FormLabel>
+                            <FormLabel>Body Weight(lbs or kg)</FormLabel>
                             <FormControl>
-                              <Input placeholder="Diastolic" {...field} />
+                              <Input placeholder="Weight" {...field} />
                             </FormControl>
-                            <FormMessage className="text-red-500" />
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -557,11 +410,11 @@ export default function RegisterPatientForm() {
                     name="heartRate"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Heart Rate (bpm) (Optional)</FormLabel>
+                        <FormLabel>Heart Rate (bpm)</FormLabel>
                         <FormControl>
                           <Input placeholder="Heart Rate" {...field} />
                         </FormControl>
-                        <FormMessage className="text-red-500" />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -570,11 +423,11 @@ export default function RegisterPatientForm() {
                     name="temperature"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Temperature (°C) (Optional)</FormLabel>
+                        <FormLabel>Body Temperature (°F)</FormLabel>
                         <FormControl>
                           <Input placeholder="Temperature" {...field} />
                         </FormControl>
-                        <FormMessage className="text-red-500" />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -583,11 +436,24 @@ export default function RegisterPatientForm() {
                     name="oxygenSaturation"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Oxygen Saturation (%) (Optional)</FormLabel>
+                        <FormLabel>Oxygen Saturation (%)</FormLabel>
                         <FormControl>
                           <Input placeholder="Oxygen Saturation" {...field} />
                         </FormControl>
-                        <FormMessage className="text-red-500" />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="systolic"
+                    render={({ field }) => (
+                      <FormItem className="w-full sm:w-1/2">
+                        <FormLabel>Systolic Blood Pressure (mmHg)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Systolic" {...field} />
+                        </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -600,7 +466,7 @@ export default function RegisterPatientForm() {
                     name="allergies"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Allergies (Optional)</FormLabel>
+                        <FormLabel>Allergies</FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder="List any known allergies"
@@ -608,7 +474,7 @@ export default function RegisterPatientForm() {
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage className="text-red-500" />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -617,7 +483,7 @@ export default function RegisterPatientForm() {
                     name="chronicConditions"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Chronic Conditions (Optional)</FormLabel>
+                        <FormLabel>Chronic Conditions</FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder="List any chronic conditions"
@@ -625,7 +491,7 @@ export default function RegisterPatientForm() {
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage className="text-red-500" />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -634,7 +500,7 @@ export default function RegisterPatientForm() {
                     name="pastSurgeries"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Past Surgeries (Optional)</FormLabel>
+                        <FormLabel>Past Surgeries</FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder="List any past surgeries"
@@ -642,27 +508,10 @@ export default function RegisterPatientForm() {
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage className="text-red-500" />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
-                  {/* <FormField
-                    control={form.control}
-                    name="familyHistory"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Family Medical History (Optional)</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Describe any relevant family medical history"
-                            className="min-h-[100px]"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-500" />
-                      </FormItem>
-                    )}
-                  /> */}
                 </div>
               </TabsContent>
               <TabsContent value="pet-details">
@@ -673,11 +522,11 @@ export default function RegisterPatientForm() {
                       name="petName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Pet Name (Optional)</FormLabel>
+                          <FormLabel>Pet Name</FormLabel>
                           <FormControl>
                             <Input placeholder="Pet Name" {...field} />
                           </FormControl>
-                          <FormMessage className="text-red-500" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -686,11 +535,11 @@ export default function RegisterPatientForm() {
                       name="petBreed"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Pet Breed (Optional)</FormLabel>
+                          <FormLabel>Breed</FormLabel>
                           <FormControl>
                             <Input placeholder="Pet Breed" {...field} />
                           </FormControl>
-                          <FormMessage className="text-red-500" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -701,7 +550,7 @@ export default function RegisterPatientForm() {
                       name="petSpecies"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Pet Species (Optional)</FormLabel>
+                          <FormLabel>Species</FormLabel>
                           <Select
                             onValueChange={field.onChange}
                             defaultValue={field.value}
@@ -719,27 +568,7 @@ export default function RegisterPatientForm() {
                               ))}
                             </SelectContent>
                           </Select>
-                          <FormMessage className="text-red-500" />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="petAge"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Pet Age (Optional)</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              placeholder="Pet Age"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(e.target.valueAsNumber)
-                              }
-                            />
-                          </FormControl>
-                          <FormMessage className="text-red-500" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -750,7 +579,7 @@ export default function RegisterPatientForm() {
                       name="petGender"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Pet Gender (Optional)</FormLabel>
+                          <FormLabel>Gender</FormLabel>
                           <Select
                             onValueChange={field.onChange}
                             defaultValue={field.value}
@@ -768,7 +597,24 @@ export default function RegisterPatientForm() {
                               ))}
                             </SelectContent>
                           </Select>
-                          <FormMessage className="text-red-500" />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="phoneNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone Number</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="e.g: 7550147999"
+                              {...field}
+                              required
+                            />
+                          </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -776,43 +622,38 @@ export default function RegisterPatientForm() {
                       control={form.control}
                       name="petDob"
                       render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormLabel>Pet Date of Birth (Optional)</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={"outline"}
-                                  className={`w-[240px] pl-3 text-left font-normal ${
-                                    !field.value && "text-muted-foreground"
-                                  }`}
-                                >
-                                  {field.value ? (
-                                    format(field.value, "PPP")
-                                  ) : (
-                                    <span>Pick a date</span>
-                                  )}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className="w-auto p-0"
-                              align="start"
-                            >
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) =>
-                                  date > new Date() ||
-                                  date < new Date("1900-01-01")
-                                }
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage className="text-red-500" />
+                        <FormItem>
+                          <FormLabel>Date of birth</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="date"
+                              {...field}
+                              value={field.value || ""}
+                              required
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="petAge"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Age</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="Pet Age"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(e.target.valueAsNumber)
+                              }
+                              disabled
+                            />
+                          </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -822,11 +663,11 @@ export default function RegisterPatientForm() {
                     name="petMicrochipNo"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Pet Microchip Number (Optional)</FormLabel>
+                        <FormLabel>Pet Microchip Number</FormLabel>
                         <FormControl>
                           <Input placeholder="Microchip Number" {...field} />
                         </FormControl>
-                        <FormMessage className="text-red-500" />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />

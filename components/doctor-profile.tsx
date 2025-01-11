@@ -161,7 +161,7 @@ export function DoctorProfile({ userId }: DoctorProfileProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            MyMedirecords
+            VetVault
           </motion.span>
         </Link>
         <nav className="hidden md:flex gap-4 sm:gap-6">

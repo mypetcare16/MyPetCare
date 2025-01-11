@@ -65,7 +65,7 @@ export function Sidebar({ className, activeTab, onTabChange }: SidebarProps) {
         <div className="px-4 py-2">
           <Link className="flex items-center justify-center" href="/homepage">
             <span className="font-bold text-xl md:text-2xl bg-gradient-to-r from-blue-600 via-blue-500 to-sky-400 bg-clip-text text-transparent">
-              MyMedirecords
+              VetVault
             </span>
           </Link>
         </div>

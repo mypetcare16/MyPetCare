@@ -8,28 +8,28 @@ const merriweather = Merriweather({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.mymedirecords.com"), // Replace with your deployed URL
+  metadataBase: new URL("https://www.vetvault.in"),
   title: {
-    default: "Your AI Doctor",
-    template: "%s | MyMediRecords",
+    default: "Your AI Veterinary Assistant",
+    template: "%s | VetVaults",
   },
   description:
-    "Revolutionize your health records with AI-powered insights and seamless organization.",
+    "Revolutionize your veterinary practice with AI-powered insights and seamless pet health record organization.",
   keywords:
-    "AI doctor, medical records, health insights, healthcare AI, medical organization",
+    "AI veterinarian, pet health records, veterinary insights, veterinary AI, pet care organization",
   openGraph: {
-    title: "Your AI Doctor - Organize and Optimize Your Health",
+    title: "Your AI Veterinary Assistant - Optimize Pet Health Management",
     description:
-      "Your trusted platform for AI-powered medical records and health insights.",
-    url: "https://www.mymedirecords.com",
+      "Your trusted platform for AI-powered veterinary records and pet health insights.",
+    url: "https://www.vetvault.in",
     type: "website",
-    siteName: "MyMediRecords",
+    siteName: "VetVaults",
     images: [
       {
-        url: "opengraph-image.png", // Ensure the file exists in your public folder
+        url: "opengraph-image.png", // Ensure this file exists in your public folder
         width: 1200,
         height: 630,
-        alt: "MyMediRecords - Your AI doctor",
+        alt: "VetVaults - Your AI Veterinary Assistant",
       },
     ],
   },

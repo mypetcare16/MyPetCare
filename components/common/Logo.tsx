@@ -10,12 +10,7 @@ export default function Logo() {
     <div className="flex items-center justify-start">
       <Link href={isAuthenticated ? "/dashboard" : "/"}>
         <div className="flex justify-center items-center transform md:scale-125 scale-100">
-          <Image
-            src={LogoImage}
-            alt="My Medi Records Logo"
-            width={150}
-            height={150}
-          />
+          <Image src={LogoImage} alt="VetVault" width={150} height={150} />
         </div>
       </Link>
     </div>
