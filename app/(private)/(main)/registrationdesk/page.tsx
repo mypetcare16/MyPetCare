@@ -3,10 +3,14 @@
 import SearchComponent from "@/components/registrationdesk_comp/SearchComponent";
 
 export default function Component() {
+  function setShowSearch(arg0: boolean): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="container mx-auto mt-1 px-4 py-5 w-screen">
-        <SearchComponent />
+        <SearchComponent onClose={() => setShowSearch(false)} />
       </main>
     </div>
   );

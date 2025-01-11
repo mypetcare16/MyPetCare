@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Save } from "lucide-react";
+import { Save, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -30,15 +30,16 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
+import SearchComponent from "./registrationdesk_comp/SearchComponent";
 
 const formSchema = z.object({
   email: z.string().optional(),
-  firstName: z.string().optional(),
+  firstName: z.string(),
   middleName: z.string().optional(),
-  lastName: z.string().optional(),
+  lastName: z.string(),
   dateOfBirth: z.string().optional(),
   gender: z.enum(["Male", "Female", "Other"]).optional(),
-  phoneNumber: z.string().min(1, "Phone number is required"),
+  phoneNumber: z.string(),
   houseNo: z.string().optional(),
   gramPanchayat: z.string().optional(),
   village: z.string().optional(),
@@ -107,11 +108,11 @@ export default function RegisterPatientForm() {
     },
   });
 
-  const [activeTab, setActiveTab] = useState("personal");
+  const [activeTab, setActiveTab] = useState("pet-details");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
 
-  // Watch petDob to calculate age
   const petDob = form.watch("petDob");
 
   useEffect(() => {
@@ -161,7 +162,6 @@ export default function RegisterPatientForm() {
     }
   };
 
-  // Helper function to calculate age
   const calculateAge = (dateOfBirth: string): number => {
     const today = new Date();
     const birthDate = new Date(dateOfBirth);
@@ -178,12 +178,39 @@ export default function RegisterPatientForm() {
     return age;
   };
 
+  const tabs = [
+    "pet-details",
+    "personal",
+    "address",
+    "vitals",
+    "medical-history",
+  ];
+
+  const handleNextTab = () => {
+    const currentIndex = tabs.indexOf(activeTab);
+    if (currentIndex < tabs.length - 1) {
+      setActiveTab(tabs[currentIndex + 1]);
+    }
+  };
+
+  const handlePreviousTab = () => {
+    const currentIndex = tabs.indexOf(activeTab);
+    if (currentIndex > 0) {
+      setActiveTab(tabs[currentIndex - 1]);
+    }
+  };
+
   return (
-    <div className="shadow-lg max-w-7xl mx-auto w-full py-9">
-      <CardHeader className="text-black">
-        <div className="text-2xl font-bold align-middle">
-          New Pet Registration
-        </div>
+    <div className="shadow-lg max-w-7xl mx-auto w-full py-9 relative">
+      <CardHeader className="text-black flex justify-between items-center">
+        <div className="text-2xl font-bold">New Pet Registration</div>
+        <Button
+          onClick={() => setShowSearch(true)}
+          className="bg-blue-500 text-white"
+        >
+          <Search className="mr-2 h-4 w-4" />
+          View Patients
+        </Button>
       </CardHeader>
       {successMessage && (
         <Alert className="mb-4 bg-green-100 border-green-400 text-green-800">
@@ -194,7 +221,7 @@ export default function RegisterPatientForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <Tabs
-              defaultValue="pet-details"
+              value={activeTab}
               className="w-full"
               onValueChange={setActiveTab}
             >
@@ -230,6 +257,163 @@ export default function RegisterPatientForm() {
                   Medical History
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="pet-details">
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="petName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Pet Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Pet Name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="petBreed"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Breed</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Pet Breed" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="petSpecies"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Species</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Species" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {["Canine", "Feline", "Other"].map((species) => (
+                                <SelectItem key={species} value={species}>
+                                  {species}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="petGender"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Gender</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Gender" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {["Male", "Female", "Other"].map((gender) => (
+                                <SelectItem key={gender} value={gender}>
+                                  {gender}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="petDob"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Date of birth</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="date"
+                              {...field}
+                              value={field.value || ""}
+                              required
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="petAge"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Age</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="Pet Age"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(e.target.valueAsNumber)
+                              }
+                              disabled
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="petMicrochipNo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Pet Microchip Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Microchip Number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g: 7550147999" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </TabsContent>
+
               <TabsContent value="personal">
                 <div className="grid gap-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -277,26 +461,9 @@ export default function RegisterPatientForm() {
                       </FormItem>
                     )}
                   />
-
-                  {/* <FormField
-                    control={form.control}
-                    name="dateOfBirth"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Date of Birth</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="date"
-                            {...field}
-                            value={field.value || ""}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  /> */}
                 </div>
               </TabsContent>
+
               <TabsContent value="address">
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 ">
@@ -385,10 +552,10 @@ export default function RegisterPatientForm() {
                   </div>
                 </div>
               </TabsContent>
+
               <TabsContent value="vitals">
                 <div className="space-y-6">
                   <div className="space-y-4">
-                    {/* <FormLabel>Blood Pressure (mmHg)</FormLabel> */}
                     <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                       <FormField
                         control={form.control}
@@ -459,6 +626,7 @@ export default function RegisterPatientForm() {
                   />
                 </div>
               </TabsContent>
+
               <TabsContent value="medical-history">
                 <div className="space-y-6">
                   <FormField
@@ -514,177 +682,48 @@ export default function RegisterPatientForm() {
                   />
                 </div>
               </TabsContent>
-              <TabsContent value="pet-details">
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="petName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Pet Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Pet Name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="petBreed"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Breed</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Pet Breed" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="petSpecies"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Species</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select Species" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {["Canine", "Feline", "Other"].map((species) => (
-                                <SelectItem key={species} value={species}>
-                                  {species}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="petGender"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Gender</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select Gender" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {["Male", "Female", "Other"].map((gender) => (
-                                <SelectItem key={gender} value={gender}>
-                                  {gender}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="phoneNumber"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Phone Number</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="e.g: 7550147999"
-                              {...field}
-                              required
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="petDob"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Date of birth</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="date"
-                              {...field}
-                              value={field.value || ""}
-                              required
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="petAge"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Age</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              placeholder="Pet Age"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(e.target.valueAsNumber)
-                              }
-                              disabled
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <FormField
-                    control={form.control}
-                    name="petMicrochipNo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Pet Microchip Number</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Microchip Number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </TabsContent>
             </Tabs>
-            <Button
-              type="submit"
-              className="w-full bg-blue-500 text-white hover:bg-blue-600"
-              disabled={isSubmitting}
-            >
-              <Save className="mr-2 h-4 w-4" />
-              {isSubmitting ? "Saving..." : "Save"}
-            </Button>
+            <div className="flex justify-between mt-6">
+              {activeTab !== "pet-details" && (
+                <Button
+                  type="button"
+                  onClick={handlePreviousTab}
+                  className="bg-gray-500 text-white"
+                >
+                  <ChevronLeft className="mr-2 h-4 w-4" />
+                  Previous
+                </Button>
+              )}
+              {activeTab !== "medical-history" ? (
+                <Button
+                  type="button"
+                  onClick={handleNextTab}
+                  className="bg-blue-500 text-white ml-auto"
+                >
+                  Next
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  className="bg-green-500 text-white ml-auto"
+                  disabled={isSubmitting}
+                >
+                  <Save className="mr-2 h-4 w-4" />
+                  {isSubmitting ? "Saving..." : "Save"}
+                </Button>
+              )}
+            </div>
           </form>
         </Form>
       </div>
+      {showSearch && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg w-full max-w-3xl">
+            <SearchComponent onClose={() => setShowSearch(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

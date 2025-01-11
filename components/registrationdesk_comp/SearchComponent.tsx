@@ -11,7 +11,11 @@ import { PatientDetailsModal } from "@/components/PatientDetailsModal";
 import { Id } from "@/convex/_generated/dataModel";
 import { Patient } from "@/types/patient";
 
-export default function PatientSearch() {
+interface SearchComponentProps {
+  onClose: () => void;
+}
+
+export default function SearchComponent({ onClose }: SearchComponentProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<Patient[]>([]);
   const [selectedPatientId, setSelectedPatientId] =
@@ -92,77 +96,81 @@ export default function PatientSearch() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="container mx-auto mt-10 px-4 py-1 w-screen">
-        <div className="rounded-lg bg-white p-6 shadow-sm mb-9">
-          <div className="space-y-2 mb-6">
-            <label className="text-lg font-medium">Search Patients</label>
-            <div className="flex space-x-2">
-              <Input
-                placeholder="Enter ID, Name, or Phone Number"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="flex-grow"
-              />
-              <Button variant="outline" size="icon">
-                <Search className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Results Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b bg-gray-50">
-                  <th className="px-4 py-2 text-left text-sm font-medium">
-                    ID
-                  </th>
-                  <th className="px-4 py-2 text-left text-sm font-medium">
-                    Name
-                  </th>
-                  <th className="px-4 py-2 text-left text-sm font-medium">
-                    Phone Number
-                  </th>
-                  <th className="px-4 py-2 text-left text-sm font-medium">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {searchResults.length > 0 ? (
-                  searchResults.map((patient) => (
-                    <tr key={patient.id.toString()} className="border-b">
-                      <td className="px-4 py-2 text-sm">{patient.patientId}</td>
-                      <td className="px-4 py-2 text-sm">
-                        {`${patient.firstName} ${patient.middleName || ""} ${patient.lastName}`}
-                      </td>
-                      <td className="px-4 py-2 text-sm">
-                        {patient.phoneNumber}
-                      </td>
-                      <td className="px-4 py-2 text-sm">
-                        <Button
-                          variant="link"
-                          className="text-blue-500 hover:text-blue-700"
-                          onClick={() => handleViewDetails(patient.id)}
-                        >
-                          View Details
-                        </Button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={4} className="px-4 py-2 text-sm text-center">
-                      No patients found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+    <div className="bg-white p-6 rounded-lg w-full max-w-3xl">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Search Patients</h2>
+        <Button onClick={onClose} variant="ghost">
+          Close
+        </Button>
+      </div>
+      <div className="space-y-2 mb-6">
+        <div className="flex space-x-2">
+          <Input
+            placeholder="Enter ID, Name, or Phone Number"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-grow"
+          />
+          <Button variant="outline" size="icon">
+            <Search className="h-4 w-4" />
+          </Button>
         </div>
-      </main>
+      </div>
+
+      {/* Results Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b bg-gray-50">
+              <th className="px-4 py-2 text-left text-sm font-medium">ID</th>
+              <th className="px-4 py-2 text-left text-sm font-medium">
+                Pet Name
+              </th>
+              <th className="px-4 py-2 text-left text-sm font-medium">
+                Parent Name
+              </th>
+              <th className="px-4 py-2 text-left text-sm font-medium">
+                Phone Number
+              </th>
+              <th className="px-4 py-2 text-left text-sm font-medium">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {searchResults.length > 0 ? (
+              searchResults.map((patient) => (
+                <tr key={patient.id.toString()} className="border-b">
+                  <td className="px-4 py-2 text-sm">{patient.patientId}</td>
+                  <td className="px-4 py-2 text-sm">{patient.petName}</td>
+
+                  <td className="px-4 py-2 text-sm">
+                    {`${patient.firstName} ${patient.middleName || ""} ${
+                      patient.lastName
+                    }`}
+                  </td>
+                  <td className="px-4 py-2 text-sm">{patient.phoneNumber}</td>
+                  <td className="px-4 py-2 text-sm">
+                    <Button
+                      variant="link"
+                      className="text-blue-500 hover:text-blue-700"
+                      onClick={() => handleViewDetails(patient.id)}
+                    >
+                      View Details
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4} className="px-4 py-2 text-sm text-center">
+                  No patients found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
       {selectedPatientId && (
         <PatientDetailsModal
           patientId={selectedPatientId}

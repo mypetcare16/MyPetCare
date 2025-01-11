@@ -116,8 +116,20 @@ export const registerPatient = mutation({
     petMicrochipNo: v.optional(v.string()),
   },
   async handler(ctx, args) {
-    // Generate a unique ID for the patient
-    const patientId = Date.now();
+    // Query the database for the highest existing patientId
+    const highestPatient = await ctx.db
+      .query("patients")
+      .order("desc")
+      .first();
+
+    // Generate the next patientId
+    let nextId = 1;
+    if (highestPatient && highestPatient.patientId) {
+      nextId = (highestPatient.patientId as number) + 1;
+    }
+
+    // Use the numeric patientId
+    const patientId = nextId;
 
     // Calculate pet age based on petDob
     const petAge = calculateAge(args.petDob);
@@ -129,7 +141,7 @@ export const registerPatient = mutation({
       petAge, // Add calculated pet age
     });
 
-    return { success: true, patientId };
+    return { success: true, patientId: nextId };
   },
 });
 
@@ -452,12 +464,12 @@ export const getAllPatientsByUserAndHospital = query({
 export const updatePatient = mutation({
   args: {
     id: v.id("patients"),
-    firstName: v.string(),
+    firstName: v.optional(v.string()),
     middleName: v.optional(v.string()),
-    lastName: v.string(),
-    dateOfBirth: v.string(),
-    gender: v.union(v.literal("Male"), v.literal("Female"), v.literal("Other")),
-    phoneNumber: v.string(),
+    lastName: v.optional(v.string()),
+    dateOfBirth:v.optional(v.string()),
+    gender: v.optional(v.union(v.literal("Male"), v.literal("Female"), v.literal("Other"))),
+    phoneNumber: v.optional(v.string()),
     email: v.optional(v.string()),
     houseNo: v.optional(v.string()),
     gramPanchayat: v.optional(v.string()),
