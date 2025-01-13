@@ -1,4 +1,5 @@
 import RegisterPatientForm from "@/components/RegisterPatientForm";
+import SearchComponent from "@/components/registrationdesk_comp/SearchComponent";
 
 export default function RegisterPatient() {
   return (
@@ -13,7 +14,8 @@ export default function RegisterPatient() {
         padding: 0,
       }}
     >
-      <RegisterPatientForm />
+      <SearchComponent />
+      {/* <RegisterPatientForm /> */}
     </div>
   );
 }

@@ -53,7 +53,7 @@ const deskMenuItems = [
     icon: LayoutDashboard,
     path: "/registrationdesk",
   },
-  { name: "Add Patient", icon: UserPlus, path: "/registerpatient" },
+  // { name: "Add Patient", icon: UserPlus, path: "/registerpatient" },
   { name: "Appointment", icon: Plus, path: "/appointmment" },
 ];
 
