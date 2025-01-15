@@ -54,7 +54,7 @@ const deskMenuItems = [
     path: "/registrationdesk",
   },
   // { name: "Add Patient", icon: UserPlus, path: "/registerpatient" },
-  { name: "Appointment", icon: Plus, path: "/appointmment" },
+  { name: "Appointment", icon: Plus, path: "/appointment" },
 ];
 
 export default function FixedNavigation() {
@@ -222,8 +222,8 @@ export default function FixedNavigation() {
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 className="pl-8"
-                placeholder="Search Patient"
-                aria-label="Search Patient"
+                placeholder="Search "
+                aria-label="Search "
                 value={searchTerm}
                 onChange={handleSearch}
                 onFocus={() => setIsOpen(true)}
@@ -249,7 +249,7 @@ export default function FixedNavigation() {
                       </ul>
                     ) : (
                       <p className="p-2 text-sm text-muted-foreground">
-                        No patients found
+                        No Pet found
                       </p>
                     )
                   ) : (
@@ -325,7 +325,7 @@ export default function FixedNavigation() {
                             </ul>
                           ) : (
                             <p className="p-2 text-sm text-muted-foreground">
-                              No patients found
+                              No pet found
                             </p>
                           )
                         ) : (

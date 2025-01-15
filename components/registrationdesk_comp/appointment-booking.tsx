@@ -145,7 +145,7 @@ export default function AppointmentBooking({
       setAvailableSlots([]);
       onClose();
       setIsFormVisible(false);
-      router.push("/appointmment");
+      router.push("/appointment");
     } catch (error) {
       toast({
         title: "Error",
@@ -174,7 +174,7 @@ export default function AppointmentBooking({
                   name="patientId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Patient Name or ID*</FormLabel>
+                      <FormLabel>Select Pet Parent Name*</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}

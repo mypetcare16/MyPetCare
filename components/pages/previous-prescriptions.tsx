@@ -101,7 +101,7 @@ export default function EnhancedPreviousPrescriptions({
             <TableRow>
               <TableHead>Date</TableHead>
               <TableHead>Doctor Name</TableHead>
-              <TableHead>Patient Name</TableHead>
+              <TableHead>Pet Parent Name</TableHead>
               <TableHead>Diagnosis</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>

@@ -183,7 +183,7 @@ const PatientCard: React.FC<PatientCardProps> = ({
               <div className="flex items-center text-sm text-yellow-600 bg-yellow-100 p-2 rounded">
                 <AlertCircle className="w-4 h-4 mr-2" />
                 Please complete the current appointment before attending to
-                another patient.
+                another Pet.
               </div>
             )}
           </div>
@@ -301,7 +301,7 @@ const Sidebar: React.FC<{
       await updateAppointmentStatus({ appointmentId, status: newStatus });
       toast({
         title: "Appointment status updated",
-        description: `Patient status changed to ${newStatus}`,
+        description: `Pet status changed to ${newStatus}`,
       });
     } catch (error) {
       console.error("Failed to update appointment status:", error);
@@ -315,7 +315,7 @@ const Sidebar: React.FC<{
 
   return (
     <aside className="w-full md:w-64 overflow-y-auto border-r p-4 flex flex-col h-full">
-      <h2 className="mb-4 font-semibold">Today's Patients ({totalPatients})</h2>
+      <h2 className="mb-4 font-semibold">Today's Pets ({totalPatients})</h2>
 
       <div className="mb-6 flex-grow">
         <h3 className="text-sm font-semibold mb-2 bg-blue-100 p-2 rounded-t-md">
@@ -347,9 +347,7 @@ const Sidebar: React.FC<{
               />
             ))
           ) : (
-            <p className="text-sm text-muted-foreground">
-              No patients in queue.
-            </p>
+            <p className="text-sm text-muted-foreground">No Pet in queue.</p>
           )}
         </div>
       </div>
@@ -385,7 +383,7 @@ const Sidebar: React.FC<{
             ))
           ) : (
             <p className="text-sm text-muted-foreground">
-              No patients currently being attended.
+              No Pets currently being attended.
             </p>
           )}
         </div>
@@ -500,7 +498,7 @@ export default function DoctorDashboard() {
           </>
         ) : (
           <p className="text-center mt-4">
-            Please select a patient to view their information.
+            Please select a Pet to view their information.
           </p>
         )}
       </main>

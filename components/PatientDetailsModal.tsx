@@ -133,14 +133,14 @@ export function PatientDetailsModal({
 
   const fields = [
     { name: "petName", label: "Pet Name" },
-    { name: "petBreed", label: "Pet Breed" },
-    { name: "petSpecies", label: "Pet Species" },
-    { name: "petAge", label: "Pet Age" },
-    { name: "petGender", label: "Pet Gender" },
-    { name: "petDob", label: "Pet Date of Birth" },
-    { name: "petMicrochipNo", label: "Pet Microchip Number" },
-    { name: "firstName", label: "First Name" },
-    { name: "lastName", label: "Last Name" },
+    { name: "petBreed", label: " Breed" },
+    { name: "petSpecies", label: " Species" },
+    { name: "petAge", label: " Age" },
+    { name: "petGender", label: " Gender" },
+    { name: "petDob", label: " Date of Birth" },
+    { name: "petMicrochipNo", label: " Microchip Number" },
+    { name: "firstName", label: "Parent First Name" },
+    { name: "lastName", label: "Parent Last Name" },
     { name: "phoneNumber", label: "Phone Number" },
     { name: "email", label: "Email" },
     { name: "houseNo", label: "House No" },
@@ -156,21 +156,19 @@ export function PatientDetailsModal({
     { name: "allergies", label: "Allergies" },
     { name: "chronicConditions", label: "Chronic Conditions" },
     { name: "pastSurgeries", label: "Past Surgeries" },
-    { name: "familyHistory", label: "Family History" },
+    // { name: "familyHistory", label: "Family History" },
   ];
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-hidden">
         <DialogHeader>
-          <DialogTitle>Patient Details</DialogTitle>
-          <DialogDescription>
-            View and edit patient information
-          </DialogDescription>
+          <DialogTitle>Pet Details</DialogTitle>
+          <DialogDescription>View and edit Pet information</DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[calc(90vh-200px)] pr-4">
           {isLoading ? (
-            <p>Loading patient details...</p>
+            <p>Loading Pet details...</p>
           ) : error ? (
             <p className="text-red-500">{error}</p>
           ) : editedPatient ? (
@@ -232,7 +230,7 @@ export function PatientDetailsModal({
               ))}
             </div>
           ) : (
-            <p>No patient data available.</p>
+            <p>No Pet data available.</p>
           )}
         </ScrollArea>
         <DialogFooter className="flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0 mt-4">
@@ -244,7 +242,7 @@ export function PatientDetailsModal({
             onClick={handleUpdate}
             className="w-full sm:w-auto"
           >
-            Update Patient
+            Update
           </Button>
         </DialogFooter>
       </DialogContent>
