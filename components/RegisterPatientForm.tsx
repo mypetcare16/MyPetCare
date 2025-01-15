@@ -237,7 +237,7 @@ export default function RegisterPatientForm({
                     name="petName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Pet Name</FormLabel>
+                        <FormLabel>Pet Name*</FormLabel>
                         <FormControl>
                           <Input placeholder="Pet Name" {...field} />
                         </FormControl>
@@ -319,7 +319,7 @@ export default function RegisterPatientForm({
                     name="petDob"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Date of birth</FormLabel>
+                        <FormLabel>Date of birth*</FormLabel>
                         <FormControl>
                           <Input
                             type="date"
@@ -374,7 +374,7 @@ export default function RegisterPatientForm({
                       name="phoneNumber"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Phone Number</FormLabel>
+                          <FormLabel>Phone Number*</FormLabel>
                           <FormControl>
                             <Input placeholder="e.g: 7550147999" {...field} />
                           </FormControl>

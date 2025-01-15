@@ -132,16 +132,16 @@ export function PatientDetailsModal({
   };
 
   const fields = [
-    { name: "petName", label: "Pet Name" },
+    { name: "petName", label: "Pet Name*" },
     { name: "petBreed", label: " Breed" },
     { name: "petSpecies", label: " Species" },
     { name: "petAge", label: " Age" },
     { name: "petGender", label: " Gender" },
-    { name: "petDob", label: " Date of Birth" },
+    { name: "petDob", label: " Date of Birth*" },
     { name: "petMicrochipNo", label: " Microchip Number" },
     { name: "firstName", label: "Parent First Name" },
     { name: "lastName", label: "Parent Last Name" },
-    { name: "phoneNumber", label: "Phone Number" },
+    { name: "phoneNumber", label: "Phone Number*" },
     { name: "email", label: "Email" },
     { name: "houseNo", label: "House No" },
     { name: "gramPanchayat", label: "Street" },
